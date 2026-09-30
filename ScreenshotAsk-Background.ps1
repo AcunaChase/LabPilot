@@ -9,6 +9,20 @@
 # Same as the main ScreenshotAsk.ps1 otherwise: installs Claude Code if missing, asks
 # for a login token if needed, never auto-pastes or auto-types anything.
 
+# Some Windows profiles end up with a stale $env:USERPROFILE that doesn't match the
+# account's real, working profile folder (seen after profile renames/migrations, e.g.
+# "geer3978" vs the real "local_geer3978"). $env:LOCALAPPDATA is recomputed fresh from
+# the real profile every logon, so use it to detect and fix the mismatch before
+# anything (including the Claude Code installer) relies on the wrong path.
+try {
+    if ($env:LOCALAPPDATA -match '^(?<root>.+)\\AppData\\Local$') {
+        $realProfileRoot = $Matches['root']
+        if ($realProfileRoot -and (Test-Path $realProfileRoot) -and $realProfileRoot -ne $env:USERPROFILE) {
+            $env:USERPROFILE = $realProfileRoot
+        }
+    }
+} catch {}
+
 # Pin the working directory to something that always exists. Depending on how this
 # was launched (double-clicked exe, shortcut, etc.), Windows may try to start it in
 # a folder that doesn't exist on this PC (e.g. a redirected/missing Downloads folder),
