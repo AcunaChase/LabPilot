@@ -5,6 +5,11 @@
 # Installs Claude Code automatically if missing. Requires a Claude account/plan
 # (you still need to log in yourself the first time - see README).
 
+# Pin the working directory to something that always exists. Depending on how this
+# was launched, Windows may try to start it in a folder that doesn't exist on this PC
+# (e.g. a redirected/missing Downloads folder), which crashes before anything below runs.
+try { [Environment]::CurrentDirectory = $env:TEMP; Set-Location $env:TEMP } catch {}
+
 Add-Type -AssemblyName System.Windows.Forms, System.Drawing
 Add-Type -MemberDefinition '[DllImport("user32.dll")] public static extern short GetAsyncKeyState(int vKey);' -Name K -Namespace W
 

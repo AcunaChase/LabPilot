@@ -9,6 +9,12 @@
 # Same as the main ScreenshotAsk.ps1 otherwise: installs Claude Code if missing, asks
 # for a login token if needed, never auto-pastes or auto-types anything.
 
+# Pin the working directory to something that always exists. Depending on how this
+# was launched (double-clicked exe, shortcut, etc.), Windows may try to start it in
+# a folder that doesn't exist on this PC (e.g. a redirected/missing Downloads folder),
+# which crashes before any of the script below even runs.
+try { [Environment]::CurrentDirectory = $env:TEMP; Set-Location $env:TEMP } catch {}
+
 Add-Type -AssemblyName System.Windows.Forms, System.Drawing
 Add-Type -MemberDefinition '[DllImport("user32.dll")] public static extern short GetAsyncKeyState(int vKey);' -Name K -Namespace W
 
