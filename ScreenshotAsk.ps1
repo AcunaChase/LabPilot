@@ -5,25 +5,6 @@
 # Installs Claude Code automatically if missing. Requires a Claude account/plan
 # (you still need to log in yourself the first time - see README).
 
-# Some Windows profiles end up with a stale $env:USERPROFILE that doesn't match the
-# account's real, working profile folder (seen after profile renames/migrations, e.g.
-# "geer3978" vs the real "local_geer3978"). $env:LOCALAPPDATA is recomputed fresh from
-# the real profile every logon, so use it to detect and fix the mismatch before
-# anything (including the Claude Code installer) relies on the wrong path.
-try {
-    if ($env:LOCALAPPDATA -match '^(?<root>.+)\\AppData\\Local$') {
-        $realProfileRoot = $Matches['root']
-        if ($realProfileRoot -and (Test-Path $realProfileRoot) -and $realProfileRoot -ne $env:USERPROFILE) {
-            $env:USERPROFILE = $realProfileRoot
-        }
-    }
-} catch {}
-
-# Pin the working directory to something that always exists. Depending on how this
-# was launched, Windows may try to start it in a folder that doesn't exist on this PC
-# (e.g. a redirected/missing Downloads folder), which crashes before anything below runs.
-try { [Environment]::CurrentDirectory = $env:TEMP; Set-Location $env:TEMP } catch {}
-
 Add-Type -AssemblyName System.Windows.Forms, System.Drawing
 Add-Type -MemberDefinition '[DllImport("user32.dll")] public static extern short GetAsyncKeyState(int vKey);' -Name K -Namespace W
 
@@ -39,30 +20,9 @@ $env:Path += ";$env:USERPROFILE\.local\bin"
 # --- Install Claude Code if it isn't already on this machine ---
 $claudeExe = "$env:USERPROFILE\.local\bin\claude.exe"
 if (-not (Get-Command claude -ErrorAction SilentlyContinue) -and -not (Test-Path $claudeExe)) {
-    # The compiled exe has no console (-noConsole), so every Write-Host/error would
-    # otherwise pop up its own blocking dialog. Redirect all output streams to suppress
-    # the installer's routine status messages; only a genuine final failure shows a dialog.
-    $installScript = $null
-    try { $installScript = Invoke-RestMethod https://claude.ai/install.ps1 } catch {}
-    $installed = $false
-    if ($installScript) {
-        try {
-            & ([ScriptBlock]::Create($installScript)) *>$null
-            $installed = $true
-        } catch {
-            try {
-                & ([ScriptBlock]::Create($installScript)) --force *>$null
-                $installed = $true
-            } catch {}
-        }
-    }
+    Write-Host "Claude Code not found - installing it now..."
+    irm https://claude.ai/install.ps1 | iex
     $env:Path += ";$env:USERPROFILE\.local\bin"
-    if (-not $installed -and -not (Get-Command claude -ErrorAction SilentlyContinue) -and -not (Test-Path $claudeExe)) {
-        [Windows.Forms.MessageBox]::Show(
-            "Couldn't install Claude Code automatically on this PC (a partial/broken install may already be there).`n`nOpen a normal PowerShell window and run this yourself:`n`nirm https://claude.ai/install.ps1 | iex",
-            "ScreenshotAsk - install failed") | Out-Null
-        return
-    }
 }
 
 # --- Make sure Claude Code is logged in, or ask for a token ---
