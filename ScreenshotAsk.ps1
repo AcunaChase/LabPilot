@@ -25,9 +25,30 @@ $env:Path += ";$env:USERPROFILE\.local\bin"
 # --- Install Claude Code if it isn't already on this machine ---
 $claudeExe = "$env:USERPROFILE\.local\bin\claude.exe"
 if (-not (Get-Command claude -ErrorAction SilentlyContinue) -and -not (Test-Path $claudeExe)) {
-    Write-Host "Claude Code not found - installing it now..."
-    irm https://claude.ai/install.ps1 | iex
+    # The compiled exe has no console (-noConsole), so every Write-Host/error would
+    # otherwise pop up its own blocking dialog. Redirect all output streams to suppress
+    # the installer's routine status messages; only a genuine final failure shows a dialog.
+    $installScript = $null
+    try { $installScript = Invoke-RestMethod https://claude.ai/install.ps1 } catch {}
+    $installed = $false
+    if ($installScript) {
+        try {
+            & ([ScriptBlock]::Create($installScript)) *>$null
+            $installed = $true
+        } catch {
+            try {
+                & ([ScriptBlock]::Create($installScript)) --force *>$null
+                $installed = $true
+            } catch {}
+        }
+    }
     $env:Path += ";$env:USERPROFILE\.local\bin"
+    if (-not $installed -and -not (Get-Command claude -ErrorAction SilentlyContinue) -and -not (Test-Path $claudeExe)) {
+        [Windows.Forms.MessageBox]::Show(
+            "Couldn't install Claude Code automatically on this PC (a partial/broken install may already be there).`n`nOpen a normal PowerShell window and run this yourself:`n`nirm https://claude.ai/install.ps1 | iex",
+            "ScreenshotAsk - install failed") | Out-Null
+        return
+    }
 }
 
 # --- Make sure Claude Code is logged in, or ask for a token ---
