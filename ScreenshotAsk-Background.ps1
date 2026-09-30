@@ -53,13 +53,13 @@ $host_.ShowInTaskbar = $false
 $host_.WindowState = 'Minimized'
 $host_.FormBorderStyle = 'FixedToolWindow'
 $host_.Opacity = 0
-$host_.Load += { $host_.Hide() }
+$host_.Add_Load({ $host_.Hide() })
 
 # --- Tray icon: the only visible sign this is running ---
 $tray = New-Object Windows.Forms.NotifyIcon
 $tray.Icon = [Drawing.SystemIcons]::Application
 $tray.Visible = $true
-$tray.Text = "ScreenshotAsk - Ctrl+Alt+Shift+Z to ask, Ctrl+Alt+Shift+C to quit"
+$tray.Text = "ScreenshotAsk (Z=ask, C=quit)"
 
 $menu = New-Object Windows.Forms.ContextMenuStrip
 $statusItem = $menu.Items.Add("Ready")
