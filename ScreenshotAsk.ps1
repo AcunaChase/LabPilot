@@ -53,6 +53,8 @@ $global:state = 'idle'
 $global:armed = $false
 $global:sw = New-Object Diagnostics.Stopwatch
 
+$smallFont = New-Object Drawing.Font('Segoe UI', 7)
+
 $f = New-Object Windows.Forms.Form
 $f.Text = 'ScreenshotAsk'
 $f.TopMost = $true
@@ -60,18 +62,20 @@ $f.FormBorderStyle = 'FixedSingle'
 $f.MaximizeBox = $false
 $f.MinimizeBox = $true
 $f.ShowInTaskbar = $true
-$f.ClientSize = '260,160'
+$f.ClientSize = '130,80'
 $f.StartPosition = 'Manual'
 $f.Location = '10,10'
+$f.Font = $smallFont
 
-$go = New-Object Windows.Forms.Button; $go.Text = 'Start'; $go.Location = '8,8'; $go.Size = '75,26'
-$stop = New-Object Windows.Forms.Button; $stop.Text = 'Stop'; $stop.Location = '90,8'; $stop.Size = '75,26'
-$exit = New-Object Windows.Forms.Button; $exit.Text = 'Exit'; $exit.Location = '172,8'; $exit.Size = '80,26'
+$go = New-Object Windows.Forms.Button; $go.Text = 'Start'; $go.Location = '4,4'; $go.Size = '38,16'
+$stop = New-Object Windows.Forms.Button; $stop.Text = 'Stop'; $stop.Location = '45,4'; $stop.Size = '38,16'
+$exit = New-Object Windows.Forms.Button; $exit.Text = 'Exit'; $exit.Location = '86,4'; $exit.Size = '38,16'
 $exit.BackColor = 'IndianRed'; $exit.ForeColor = 'White'
-$lbl = New-Object Windows.Forms.Label; $lbl.Text = 'Stopped'; $lbl.Location = '8,42'; $lbl.Size = '244,30'
+$lbl = New-Object Windows.Forms.Label; $lbl.Text = 'Stopped'; $lbl.Location = '4,24'; $lbl.Size = '122,14'
 $box = New-Object Windows.Forms.TextBox
 $box.Multiline = $true; $box.ReadOnly = $true; $box.ScrollBars = 'Both'
-$box.Location = '8,76'; $box.Size = '244,76'
+$box.Location = '4,40'; $box.Size = '122,36'
+foreach ($c in @($go, $stop, $exit, $lbl, $box)) { $c.Font = $smallFont }
 $f.Controls.AddRange(@($go, $stop, $exit, $lbl, $box))
 
 function Down($vk) { ([W.K]::GetAsyncKeyState($vk) -band 0x8000) -ne 0 }
