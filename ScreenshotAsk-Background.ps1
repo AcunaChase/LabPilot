@@ -123,10 +123,8 @@ $timer.Add_Tick({
                 if ($ans) {
                     Set-Clipboard $ans
                     $statusItem.Text = "Ready (last answer copied)"
-                    $tray.ShowBalloonTip(2000, "ScreenshotAsk", "Answer copied to clipboard.", [Windows.Forms.ToolTipIcon]::Info)
                 } else {
                     $statusItem.Text = "No answer - see $err"
-                    $tray.ShowBalloonTip(3000, "ScreenshotAsk", "No answer came back. Check $err", [Windows.Forms.ToolTipIcon]::Warning)
                 }
                 $global:state = 'idle'
             }
@@ -134,7 +132,5 @@ $timer.Add_Tick({
     }
 })
 $timer.Start()
-
-$tray.ShowBalloonTip(2500, "ScreenshotAsk", "Running. Ctrl+Alt+Shift+Z to ask, Ctrl+Alt+Shift+C to quit.", [Windows.Forms.ToolTipIcon]::Info)
 
 [Windows.Forms.Application]::Run($host_)
