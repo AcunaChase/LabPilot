@@ -20,28 +20,12 @@ question about it. It is not tied to RStudio or any other specific program.
 ## Requirements
 
 - Windows with PowerShell.
-- [Claude Code](https://claude.ai/install.ps1) installed (the script offers to check, but
-  does not auto-install it — see below).
 - A Claude account with a paid plan or API access, since answering screenshots uses
   your account's usage.
 
-## Setup
-
-Install Claude Code if you don't already have it:
-
-```powershell
-irm https://claude.ai/install.ps1 | iex
-```
-
-Log in once:
-
-```powershell
-$env:Path += ";$env:USERPROFILE\.local\bin"
-claude setup-token
-```
-
-This opens a browser sign-in and prints a long-lived token. Keep it private — anyone
-with it can use your Claude account.
+Claude Code itself does **not** need to be installed beforehand — the script checks
+for it and installs it automatically the first time it runs. Logging in is the one
+step you always do yourself (see below).
 
 ## Running it
 
@@ -49,15 +33,22 @@ with it can use your Claude account.
 powershell -ExecutionPolicy Bypass -File .\ScreenshotAsk.ps1
 ```
 
+On first run:
+1. If Claude Code isn't installed yet, the script installs it automatically
+   (via `https://claude.ai/install.ps1`).
+2. If you aren't logged in yet, it asks you to paste a Claude token.
+   Get one by running `claude setup-token` in a terminal — this opens a browser
+   sign-in and prints a long-lived token. Keep it private; anyone with it can use
+   your Claude account. The script never stores or transmits it anywhere besides
+   your own Claude Code login.
+
+Then, every time you run it:
 - Click **Start**.
 - Press **Ctrl+Alt+Shift+Z** whenever you want the current screen read and answered.
 - The answer appears in the tool window and on your clipboard (Ctrl+V to paste it
   anywhere).
 - **Stop** pauses listening for the hotkey. **Exit** closes the tool completely and
   clears its temp files.
-
-If Claude Code isn't logged in yet on this machine, the script asks you to paste a
-token (from `claude setup-token`) the first time you run it.
 
 ## Customizing
 

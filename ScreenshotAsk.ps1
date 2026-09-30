@@ -2,7 +2,8 @@
 # Press a hotkey, take a screenshot, ask Claude about it, get the answer on your clipboard.
 # Nothing is auto-pasted or auto-typed anywhere - you decide what to do with the answer.
 #
-# Requires: Claude Code (https://claude.ai/install.ps1) and a Claude account/plan.
+# Installs Claude Code automatically if missing. Requires a Claude account/plan
+# (you still need to log in yourself the first time - see README).
 
 Add-Type -AssemblyName System.Windows.Forms, System.Drawing
 Add-Type -MemberDefinition '[DllImport("user32.dll")] public static extern short GetAsyncKeyState(int vKey);' -Name K -Namespace W
@@ -15,6 +16,14 @@ $HKName = 'Ctrl+Alt+Shift+Z'
 $Prompt = "Read the attached screenshot. Answer whatever question is shown as clearly and concisely as possible. If it's multiple choice, give the answer and a one-line reason. Do not add extra commentary."
 
 $env:Path += ";$env:USERPROFILE\.local\bin"
+
+# --- Install Claude Code if it isn't already on this machine ---
+$claudeExe = "$env:USERPROFILE\.local\bin\claude.exe"
+if (-not (Get-Command claude -ErrorAction SilentlyContinue) -and -not (Test-Path $claudeExe)) {
+    Write-Host "Claude Code not found - installing it now..."
+    irm https://claude.ai/install.ps1 | iex
+    $env:Path += ";$env:USERPROFILE\.local\bin"
+}
 
 # --- Make sure Claude Code is logged in, or ask for a token ---
 $tok = $env:CLAUDE_CODE_OAUTH_TOKEN
