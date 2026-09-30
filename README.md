@@ -76,6 +76,29 @@ Then, every time you run it:
 - **Stop** pauses listening for the hotkey. **Exit** closes the tool completely and
   clears its temp files.
 
+## Background variant (no main window)
+
+`ScreenshotAsk-Background.ps1` (and its compiled `ScreenshotAsk-Background.exe`) is
+the same tool with two differences:
+
+- It starts listening immediately - no Start button, because there's no window.
+- The only visible sign it's running is a small icon in your system tray. Right-click
+  it for an Exit option, or use the hotkeys below. It isn't fully invisible on
+  purpose: a tool with zero visible footprint is a tool built to be used somewhere
+  you don't want anyone to notice, and that's not something this project is for.
+
+Hotkeys:
+- **Ctrl+Alt+Shift+Z** - screenshot, ask Claude, copy the answer to your clipboard.
+- **Ctrl+Alt+Shift+C** - close the app completely, from anywhere, any time.
+
+Run it the same way as the main version, pointing at the background file instead:
+
+```powershell
+powershell -ExecutionPolicy Bypass -File "$env:USERPROFILE\Downloads\ScreenshotAsk-Background.ps1"
+```
+
+or double-click `ScreenshotAsk-Background.exe`.
+
 ## Customizing
 
 - **Hotkey:** edit the `$HKKeys` array near the top of `ScreenshotAsk.ps1`. It's a
