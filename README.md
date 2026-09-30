@@ -6,7 +6,7 @@ is ever auto-typed or auto-pasted into any application; you decide what to do wi
 the answer.
 
 It is app-agnostic: it just screenshots whatever is on your screen and asks a
-question about it. It is not tied to RStudio or any other specific program.
+question about it. 
 
 ## What it does
 
